@@ -26,25 +26,29 @@ def driverSetup(web, userId, userpd, urlFirst):
     web.set_window_size(1020, 960)
 
 
+def scrollUpToDown(web):
+    web.execute_script("window.scrollTo(0, 400);")
+    time.sleep(0.15)
+    web.execute_script("window.scrollTo(0, 800);")
+    time.sleep(0.15)
+    web.execute_script("window.scrollTo(0, 1200);")
+    time.sleep(0.15)
+    web.execute_script("window.scrollTo(0, 1600);")
+    time.sleep(0.15)
+    web.execute_script("window.scrollTo(0, 2000);")
+    time.sleep(0.15)
+    web.execute_script("window.scrollTo(0, 2400);")
+    time.sleep(0.15)
+    web.execute_script("window.scrollTo(0, 2800);")
+    time.sleep(0.15)
+    web.execute_script("window.scrollTo(0, 3200);")
+
+
 def crawling(web, repeatNum, savePath):
     while repeatNum > 0:
-        print('Number of pages remaining: ' + str(repeatNum))
+        print('\n\nNumber of pages remaining: ' + str(repeatNum))
         print('Current_url:' + str(web.current_url))
-        web.execute_script("window.scrollTo(0, 400);")
-        time.sleep(0.1)
-        web.execute_script("window.scrollTo(0, 800);")
-        time.sleep(0.1)
-        web.execute_script("window.scrollTo(0, 1200);")
-        time.sleep(0.1)
-        web.execute_script("window.scrollTo(0, 1600);")
-        time.sleep(0.1)
-        web.execute_script("window.scrollTo(0, 2000);")
-        time.sleep(0.1)
-        web.execute_script("window.scrollTo(0, 2400);")
-        time.sleep(0.1)
-        web.execute_script("window.scrollTo(0, 2800);")
-        time.sleep(0.1)
-        web.execute_script("window.scrollTo(0, 3200);")
+        scrollUpToDown(web)
         web.implicitly_wait(20)
 
         html = web.page_source
@@ -57,38 +61,10 @@ def crawling(web, repeatNum, savePath):
             html = web.page_source
             soup = BeautifulSoup(html, 'html.parser')
             if count == 5:
-                web.execute_script("window.scrollTo(0, 400);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 800);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 1200);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 1600);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 2000);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 2400);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 2800);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 3200);")
+                scrollUpToDown(web)
             if count > 12:
                 web.refresh()
-                web.execute_script("window.scrollTo(0, 400);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 800);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 1200);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 1600);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 2000);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 2400);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 2800);")
-                time.sleep(0.1)
-                web.execute_script("window.scrollTo(0, 3200);")
+                scrollUpToDown(web)
                 count = 0
                 continue
             count += 1
@@ -96,9 +72,9 @@ def crawling(web, repeatNum, savePath):
         elements = soup.find_all('div', {'class': '_309ad3C'})
         urlList = []
         downloadedWell = True
+        downloadcount = 0
         for element in elements:
             # print(element)
-            downloadcount = 0
             est = str(element)
             if (est.find('(') != -1 & est.find(')') != -1) & (est.find('lazyload') == -1):
                 est = est[est.find('(')+2: est.find(')')-1]
@@ -109,7 +85,6 @@ def crawling(web, repeatNum, savePath):
                 try:
                     if os.path.isfile(filename):
                         print(': already')
-
                     else:
                         urllib.request.urlretrieve(est, filename)
                         print(': downloaded')
@@ -120,8 +95,7 @@ def crawling(web, repeatNum, savePath):
                     break
         if downloadedWell == False:
             continue
-        print('downloaded images in this page: ' + str(downloadcount))
-
+        print('Downloaded images in this page: ' + str(downloadcount))
         web.find_element_by_xpath(
             '//*[@id="wrapper"]/div[1]/div/nav/div/span[2]/a').click()
         repeatNum -= 1
@@ -144,4 +118,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
