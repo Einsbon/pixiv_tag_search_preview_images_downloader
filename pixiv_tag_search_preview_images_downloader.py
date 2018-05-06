@@ -28,8 +28,8 @@ def driverSetup(web, userId, userpd, urlFirst):
 
 def crawling(web, repeatNum, savePath):
     while repeatNum > 0:
-        print('Page Count' + str(repeatNum))
-        print('current_url:' + str(web.current_url))
+        print('Number of pages remaining: ' + str(repeatNum))
+        print('Current_url:' + str(web.current_url))
         web.execute_script("window.scrollTo(0, 400);")
         time.sleep(0.1)
         web.execute_script("window.scrollTo(0, 800);")
@@ -74,28 +74,56 @@ def crawling(web, repeatNum, savePath):
                 web.execute_script("window.scrollTo(0, 3200);")
             if count > 12:
                 web.refresh()
+                web.execute_script("window.scrollTo(0, 400);")
+                time.sleep(0.1)
+                web.execute_script("window.scrollTo(0, 800);")
+                time.sleep(0.1)
+                web.execute_script("window.scrollTo(0, 1200);")
+                time.sleep(0.1)
+                web.execute_script("window.scrollTo(0, 1600);")
+                time.sleep(0.1)
+                web.execute_script("window.scrollTo(0, 2000);")
+                time.sleep(0.1)
+                web.execute_script("window.scrollTo(0, 2400);")
+                time.sleep(0.1)
+                web.execute_script("window.scrollTo(0, 2800);")
+                time.sleep(0.1)
+                web.execute_script("window.scrollTo(0, 3200);")
+                count = 0
                 continue
             count += 1
         time.sleep(1)
         elements = soup.find_all('div', {'class': '_309ad3C'})
         urlList = []
+        downloadedWell = True
         for element in elements:
             # print(element)
+            downloadcount = 0
             est = str(element)
             if (est.find('(') != -1 & est.find(')') != -1) & (est.find('lazyload') == -1):
                 est = est[est.find('(')+2: est.find(')')-1]
                 urlList.append(est)
                 filename = savePath + "\\" + est.split('/')[-1]
                 print(est)
-                print(filename)
+                # print(filename)
                 try:
-                    urllib.request.urlretrieve(est, filename)
+                    if os.path.isfile(filename):
+                        print(': already')
+
+                    else:
+                        urllib.request.urlretrieve(est, filename)
+                        print(': downloaded')
+                        downloadcount += 1
                 except:
-                    continue
+                    print('error, refrestart this page')
+                    downloadedWell = False
+                    break
+        if downloadedWell == False:
+            continue
+        print('downloaded images in this page: ' + str(downloadcount))
 
         web.find_element_by_xpath(
             '//*[@id="wrapper"]/div[1]/div/nav/div/span[2]/a').click()
-        print('Number of pages saved: ' + str(repeatNum))
         repeatNum -= 1
 
 
@@ -103,11 +131,11 @@ def main():
     # print("launch path" + os.getcwd())
     # print('phantom path' + phantompath)
     print(' ')
-    userId = input('id:')
-    userPd = getpass.getpass('password:')
+    userId = input('Id:')
+    userPd = getpass.getpass('Password:')
     web = webdriver.Chrome(os.getcwd() + '\\chromedriver.exe')
     driverSetup(web, userId, userPd, urlLogin)
-    startUrl = input('start url:')
+    startUrl = input('Start url:')
     savePath = input('Path to save:')
     pageNumber = int(input('Number of pages to download:'))
     web.get(startUrl)
@@ -116,3 +144,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
